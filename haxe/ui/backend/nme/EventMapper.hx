@@ -1,7 +1,7 @@
 package haxe.ui.backend.nme;
 
 class EventMapper {
-    public static var HAXEUI_TO_OPENFL:Map<String, String> = [
+    public static var HAXEUI_TO_NME:Map<String, String> = [
         haxe.ui.core.MouseEvent.MOUSE_MOVE => nme.events.MouseEvent.MOUSE_MOVE,
         haxe.ui.core.MouseEvent.MOUSE_OVER => nme.events.MouseEvent.MOUSE_OVER,
         haxe.ui.core.MouseEvent.MOUSE_OUT => nme.events.MouseEvent.MOUSE_OUT,
@@ -14,7 +14,7 @@ class EventMapper {
         haxe.ui.core.KeyboardEvent.KEY_UP => nme.events.KeyboardEvent.KEY_UP
     ];
 
-    public static var OPENFL_TO_HAXEUI:Map<String, String> = [
+    public static var NME_TO_HAXEUI:Map<String, String> = [
         nme.events.MouseEvent.MOUSE_MOVE => haxe.ui.core.MouseEvent.MOUSE_MOVE,
         nme.events.MouseEvent.MOUSE_OVER => haxe.ui.core.MouseEvent.MOUSE_OVER,
         nme.events.MouseEvent.MOUSE_OUT => haxe.ui.core.MouseEvent.MOUSE_OUT,

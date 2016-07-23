@@ -65,7 +65,7 @@ class ComponentBase extends Sprite implements IComponentBase {
 
         NMEStyleHelper.paintStyleSection(graphics, style, width, height);
         if (style.clip == true) {
-            this.scrollRect = new openfl.geom.Rectangle(0, 0, width, height);
+            this.scrollRect = new nme.geom.Rectangle(0, 0, width, height);
         }
     }
 
@@ -73,7 +73,7 @@ class ComponentBase extends Sprite implements IComponentBase {
         if (value == null) {
             this.scrollRect = null;
         } else {
-            this.scrollRect = new openfl.geom.Rectangle(value.left, value.top, value.width, value.height);
+            this.scrollRect = new nme.geom.Rectangle(value.left, value.top, value.width, value.height);
         }
     }
 
@@ -225,7 +225,7 @@ class ComponentBase extends Sprite implements IComponentBase {
                 | MouseEvent.CLICK:
                 if (_eventMap.exists(type) == false) {
                     _eventMap.set(type, listener);
-                    addEventListener(EventMapper.HAXEUI_TO_OPENFL.get(type), __onMouseEvent);
+                    addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
                 }
 
             case UIEvent.CHANGE:
@@ -244,7 +244,7 @@ class ComponentBase extends Sprite implements IComponentBase {
                 | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.MOUSE_WHEEL
                 | MouseEvent.CLICK:
                 _eventMap.remove(type);
-                removeEventListener(EventMapper.HAXEUI_TO_OPENFL.get(type), __onMouseEvent);
+                removeEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
 
             case UIEvent.CHANGE:
                 _eventMap.remove(type);
@@ -258,8 +258,8 @@ class ComponentBase extends Sprite implements IComponentBase {
     //***********************************************************************************************************
     // Event handlers
     //***********************************************************************************************************
-    private function __onMouseEvent(event:openfl.events.MouseEvent) {
-        var type:String = EventMapper.OPENFL_TO_HAXEUI.get(event.type);
+    private function __onMouseEvent(event:nme.events.MouseEvent) {
+        var type:String = EventMapper.NME_TO_HAXEUI.get(event.type);
         if (type != null) {
             var fn = _eventMap.get(type);
             if (fn != null) {

@@ -18,7 +18,7 @@ class ScreenBase {
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         _mapping = new Map<String, UIEvent->Void>();
-        Lib.current.stage.addEventListener(openfl.events.Event.RESIZE, onStageResize);
+        Lib.current.stage.addEventListener(nme.events.Event.RESIZE, onStageResize);
     }
 
     public var options(default, default):Dynamic;
@@ -58,7 +58,7 @@ class ScreenBase {
         Lib.current.stage.removeChild(component);
     }
 
-    private function onStageResize(event:openfl.events.Event) {
+    private function onStageResize(event:nme.events.Event) {
         for (c in _topLevelComponents) {
             if (c.percentWidth > 0) {
                 c.width = (this.width * c.percentWidth) / 100;
@@ -88,7 +88,7 @@ class ScreenBase {
     // Events
     //***********************************************************************************************************
     private function supportsEvent(type:String):Bool {
-        return EventMapper.HAXEUI_TO_OPENFL.get(type) != null;
+        return EventMapper.HAXEUI_TO_NME.get(type) != null;
     }
 
     private function mapEvent(type:String, listener:UIEvent->Void) {
@@ -97,13 +97,13 @@ class ScreenBase {
                 | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_OPENFL.get(type), __onMouseEvent);
+                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
                 }
 
             case KeyboardEvent.KEY_DOWN | KeyboardEvent.KEY_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_OPENFL.get(type), __onKeyEvent);
+                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onKeyEvent);
                 }
         }
     }
@@ -113,16 +113,16 @@ class ScreenBase {
             case MouseEvent.MOUSE_MOVE | MouseEvent.MOUSE_OVER | MouseEvent.MOUSE_OUT
                 | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK:
                 _mapping.remove(type);
-                Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_OPENFL.get(type), __onMouseEvent);
+                Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
 
             case KeyboardEvent.KEY_DOWN | KeyboardEvent.KEY_UP:
                 _mapping.remove(type);
-                Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_OPENFL.get(type), __onKeyEvent);
+                Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onKeyEvent);
         }
     }
 
-    private function __onMouseEvent(event:openfl.events.MouseEvent) {
-        var type:String = EventMapper.OPENFL_TO_HAXEUI.get(event.type);
+    private function __onMouseEvent(event:nme.events.MouseEvent) {
+        var type:String = EventMapper.NME_TO_HAXEUI.get(event.type);
         if (type != null) {
             var fn = _mapping.get(type);
             if (fn != null) {
@@ -135,8 +135,8 @@ class ScreenBase {
         }
     }
 
-    private function __onKeyEvent(event:openfl.events.KeyboardEvent) {
-        var type:String = EventMapper.OPENFL_TO_HAXEUI.get(event.type);
+    private function __onKeyEvent(event:nme.events.KeyboardEvent) {
+        var type:String = EventMapper.NME_TO_HAXEUI.get(event.type);
         if (type != null) {
             var fn = _mapping.get(type);
             if (fn != null) {
