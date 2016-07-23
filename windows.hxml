@@ -1,0 +1,16 @@
+-lib hscript
+-lib nme
+-lib haxeui-core
+
+-D webgl
+-D native
+-D windows
+-D desktop
+-D webgl
+--remap flash:nme
+-cp bin/nme/nme/cpp/haxe
+-cpp bin/nme/nme/cpp/obj
+
+-cp .
+#--no-output 
+--macro haxe.macro.Compiler.include("haxe.ui")
