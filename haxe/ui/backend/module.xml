@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<module>
+<module id="haxeui-nme">
 	<themes>
 		<global>
 			<style resource="styles/main.css" />
 		</global>
 		<default>
 			<style resource="styles/default/main.css" />
-			<style resource="styles/app.css" />
 		</default>
 	</themes>
 </module>
