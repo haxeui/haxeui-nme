@@ -16,7 +16,7 @@ before_install:
 install:
     - haxelib install hxcpp
     - haxelib install nme
-    - echo "y" | haxelib run nme setup
+    - haxelib run nme setup -y
     - haxelib install hscript
     # - haxelib dev haxeui-openfl $TRAVIS_BUILD_DIR
 
