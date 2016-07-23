@@ -15,6 +15,7 @@ before_install:
 
 
 install:
+    - haxelib install hxcpp
     - haxelib install nme
     - echo "y" | haxelib run nme setup
     - haxelib install hscript

@@ -48,7 +48,6 @@ class ScreenBase {
 
     private var _topLevelComponents:Array<Component> = new Array<Component>();
     public function addComponent(component:Component) {
-        //te
         _topLevelComponents.push(component);
         Lib.current.stage.addChild(component);
         onStageResize(null);
