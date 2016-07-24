@@ -8,6 +8,10 @@
 <h2>haxeui-nme</h2>
 `haxeui-nme` is the `NME` backend for HaxeUI.
 
+<p align="center">
+	<img src="https://github.com/haxeui/haxeui-nme/raw/master/screen.png" />
+</p>
+
 <h2>Installation</h2>
  * `haxeui-nme` has a dependency to <a href="https://github.com/haxeui/haxeui-core">`haxeui-core`</a>, and so that too must be installed.
  * `haxeui-nme` also has a dependency to <a href="https://github.com/haxenme/nme/">NME</a>, please refer to the installation instructions on their <a href="https://github.com/haxenme/nme/">NME</a>.
