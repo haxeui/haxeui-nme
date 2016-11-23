@@ -25,14 +25,19 @@ class ScreenBase {
 
     public var width(get, null):Float;
     public function get_width():Float {
-        return Lib.current.stage.stageWidth;
+        return Lib.current.stage.stageWidth / Toolkit.scaleX;
     }
 
     public var height(get, null):Float;
     public function get_height() {
-        return Lib.current.stage.stageHeight;
+        return Lib.current.stage.stageHeight / Toolkit.scaleY;
     }
 
+    public var dpi(get, null):Float;
+    private function get_dpi():Float {
+        return 72;
+    }
+    
     public var focus(get, set):Component;
     private function get_focus():Component {
         return cast Lib.current.stage.focus;
@@ -48,6 +53,8 @@ class ScreenBase {
 
     private var _topLevelComponents:Array<Component> = new Array<Component>();
     public function addComponent(component:Component) {
+        component.scaleX = Toolkit.scaleX;
+        component.scaleY = Toolkit.scaleY;
         _topLevelComponents.push(component);
         Lib.current.stage.addChild(component);
         onStageResize(null);
@@ -131,8 +138,8 @@ class ScreenBase {
             var fn = _mapping.get(type);
             if (fn != null) {
                 var mouseEvent = new MouseEvent(type);
-                mouseEvent.screenX = event.stageX;
-                mouseEvent.screenY = event.stageY;
+                mouseEvent.screenX = event.stageX / Toolkit.scaleX;
+                mouseEvent.screenY = event.stageY / Toolkit.scaleY;
                 mouseEvent.buttonDown = event.buttonDown;
                 fn(mouseEvent);
             }
