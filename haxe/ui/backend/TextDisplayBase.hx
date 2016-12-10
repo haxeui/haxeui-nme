@@ -119,6 +119,19 @@ class TextDisplayBase extends TextField {
         return value;
     }
 
+    public var textAlign(get, set):Null<String>;
+    private function get_textAlign():Null<String> {
+        var format:TextFormat = getTextFormat();
+        return cast format.align;
+    }
+    private function set_textAlign(value:Null<String>):Null<String> {
+        var format:TextFormat = getTextFormat();
+        format.align = value;
+        defaultTextFormat = format;
+        setTextFormat(format);
+        return value;
+    }
+
     private static inline function isEmbeddedFont(name:String) {
         return (name != "_sans" && name != "_serif" && name != "_typewriter");
     }
