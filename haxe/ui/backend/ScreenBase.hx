@@ -37,7 +37,7 @@ class ScreenBase {
     private function get_dpi():Float {
         return 72;
     }
-    
+
     public var focus(get, set):Component;
     private function get_focus():Component {
         return cast Lib.current.stage.focus;
@@ -68,7 +68,7 @@ class ScreenBase {
     private function handleSetComponentIndex(child:Component, index:Int) {
         Lib.current.stage.setChildIndex(child, index);
     }
-    
+
     private function onStageResize(event:nme.events.Event) {
         for (c in _topLevelComponents) {
             if (c.percentWidth > 0) {
