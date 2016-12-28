@@ -86,11 +86,12 @@ class ImageDisplayBase extends Sprite {
     private function set_imageClipRect(value:Rectangle):Rectangle {
         _imageClipRect = value;
 
-        //TODO
-        if(value == null) {
-
+        if (value == null) {
+            this.scrollRect = null;
         } else {
-
+            this.scrollRect = new nme.geom.Rectangle(-left, -top, Math.fround(value.width), Math.fround(value.height));
+            left = value.left;
+            top = value.top;
         }
 
         return value;
