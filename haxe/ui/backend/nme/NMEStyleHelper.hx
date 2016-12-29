@@ -91,6 +91,11 @@ class NMEStyleHelper {
 
         var backgroundColor:Null<Int> = style.backgroundColor;
         var backgroundColorEnd:Null<Int> = style.backgroundColorEnd;
+		var backgroundOpacity:Null<Float> = style.backgroundOpacity;
+        if(backgroundOpacity == null) {
+            backgroundOpacity = 1;
+        }
+		
         #if html5 // TODO: fix for html5 not working with non-gradient fills
         if (backgroundColor != null && backgroundColorEnd == null) {
             backgroundColorEnd = backgroundColor;
@@ -102,7 +107,7 @@ class NMEStyleHelper {
                 var w:Int = Std.int(rc.width);
                 var h:Int = Std.int(rc.height);
                 var colors:Array<UInt> = [backgroundColor, backgroundColorEnd];
-                var alphas:Array<Float> = [1, 1];
+                var alphas:Array<Float> = [backgroundOpacity, backgroundOpacity];
                 var ratios:Array<Int> = [0, 255];
                 var matrix:Matrix = new Matrix();
 
