@@ -91,11 +91,11 @@ class NMEStyleHelper {
 
         var backgroundColor:Null<Int> = style.backgroundColor;
         var backgroundColorEnd:Null<Int> = style.backgroundColorEnd;
-		var backgroundOpacity:Null<Float> = style.backgroundOpacity;
+        var backgroundOpacity:Null<Float> = style.backgroundOpacity;
         if(backgroundOpacity == null) {
             backgroundOpacity = 1;
         }
-		
+
         #if html5 // TODO: fix for html5 not working with non-gradient fills
         if (backgroundColor != null && backgroundColorEnd == null) {
             backgroundColorEnd = backgroundColor;
