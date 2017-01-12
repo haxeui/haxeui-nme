@@ -129,7 +129,7 @@ class TextDisplayBase extends TextField {
     }
     private function set_textAlign(value:Null<String>):Null<String> {
         var format:TextFormat = getTextFormat();
-        format.align = value;
+        format.align = cast value;
         defaultTextFormat = format;
         setTextFormat(format);
         return value;
