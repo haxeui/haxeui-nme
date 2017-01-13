@@ -7,6 +7,8 @@ import nme.text.TextFieldType;
 import nme.text.TextFieldAutoSize;
 
 class TextInputBase extends TextDisplayBase {
+    public var password:Bool;
+    
     @:access(haxe.ui.components.TextArea)
     public function new() {
         super();
