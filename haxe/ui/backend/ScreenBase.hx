@@ -35,7 +35,7 @@ class ScreenBase {
 
     public var dpi(get, null):Float;
     private function get_dpi():Float {
-        return 72;
+        return nme.system.Capabilities.screenDPI;
     }
 
     public var focus(get, set):Component;
