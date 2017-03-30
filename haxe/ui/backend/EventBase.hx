@@ -13,7 +13,9 @@ class EventBase {
     
     public function cancel() {
          if (_originalEvent != null) {
+            #if flash
             _originalEvent.preventDefault();
+            #end
             _originalEvent.stopImmediatePropagation();
             _originalEvent.stopPropagation();
         }
