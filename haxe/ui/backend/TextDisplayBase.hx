@@ -2,12 +2,12 @@ package haxe.ui.backend;
 
 import haxe.ui.core.Component;
 import haxe.ui.styles.Style;
-import openfl.text.TextFormatAlign;
-import openfl.Assets;
-import openfl.text.TextField;
-import openfl.text.TextFieldAutoSize;
-import openfl.text.TextFieldType;
-import openfl.text.TextFormat;
+import nme.text.TextFormatAlign;
+import nme.Assets;
+import nme.text.TextField;
+import nme.text.TextFieldAutoSize;
+import nme.text.TextFieldType;
+import nme.text.TextFormat;
 
 class TextDisplayBase extends TextField {
     public var parentComponent:Component;
