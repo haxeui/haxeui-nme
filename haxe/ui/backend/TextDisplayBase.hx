@@ -100,7 +100,7 @@ class TextDisplayBase extends TextField {
             }
         }
         if (style.fontSize != null) {
-            format.size = style.fontSize;
+            format.size = style.fontSize.toFloat();
         }
         if (style.textAlign != null) {
             format.align = cast style.textAlign;
