@@ -51,6 +51,8 @@ class ScreenBase {
         return value;
     }
 
+    public var title:String;
+
     private var _topLevelComponents:Array<Component> = new Array<Component>();
     public function addComponent(component:Component) {
         component.scaleX = Toolkit.scaleX;
