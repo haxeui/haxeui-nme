@@ -1,5 +1,6 @@
 sudo: true
 language: haxe
+dist: trusty
 
 notifications:
   webhooks:
