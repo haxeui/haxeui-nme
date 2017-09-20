@@ -1,3 +1,3 @@
 package haxe.ui.backend;
 
-typedef ImageData = nme.display.BitmapData;
+typedef ImageData = Any;
