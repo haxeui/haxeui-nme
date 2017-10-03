@@ -44,7 +44,7 @@ class ScreenBase {
     }
     private function set_focus(value:Component):Component {
         if (value != null && value.hasTextInput()) {
-            Lib.current.stage.focus = value.getTextInput();
+            Lib.current.stage.focus = value.getTextInput().textField;
         } else {
             Lib.current.stage.focus = value;
         }
