@@ -139,6 +139,10 @@ class TextDisplayBase {
     }
 
     private static function textAlign(s:String):TextFormatAlign {
+        if (s == null) {
+            return null;
+        }
+        
         switch (s) {
             case "center":
                 return TextFormatAlign.CENTER;
