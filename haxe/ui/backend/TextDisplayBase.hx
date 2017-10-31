@@ -7,6 +7,7 @@ import nme.text.TextField;
 import nme.text.TextFieldAutoSize;
 import nme.text.TextFieldType;
 import nme.text.TextFormat;
+import nme.text.TextFormatAlign;
 
 class TextDisplayBase {
     public var textField:TextField;
@@ -58,8 +59,8 @@ class TextDisplayBase {
         var format:TextFormat = textField.getTextFormat();
 
         if (_textStyle != null) {
-            if (format.align != _textStyle.textAlign) {
-                format.align = _textStyle.textAlign;
+            if (format.align != textAlign(_textStyle.textAlign)) {
+                format.align = textAlign(_textStyle.textAlign);
             }
 
             var fontSizeValue = Std.int(_textStyle.fontSize);
@@ -135,5 +136,16 @@ class TextDisplayBase {
 
     private static inline function isEmbeddedFont(name:String) {
         return (name != "_sans" && name != "_serif" && name != "_typewriter");
+    }
+
+    private static function textAlign(s:String):TextFormatAlign {
+        switch (s) {
+            case "center":
+                return TextFormatAlign.CENTER;
+            case "right":
+                return TextFormatAlign.RIGHT;
+            case _:
+        }
+        return TextFormatAlign.LEFT;
     }
 }
