@@ -1,5 +1,6 @@
 package haxe.ui.backend;
 
+import haxe.ui.assets.FontInfo;
 import haxe.ui.core.Component;
 import haxe.ui.styles.Style;
 import nme.Assets;
@@ -44,6 +45,7 @@ class TextDisplayBase {
     private var _textStyle:Style;
     private var _multiline:Bool = true;
     private var _wordWrap:Bool = false;
+    private var _fontInfo:FontInfo = null;
     
     //***********************************************************************************************************
     // Validation functions
@@ -70,13 +72,8 @@ class TextDisplayBase {
                 measureTextRequired = true;
             }
 
-            if (format.font != _textStyle.fontName) {
-                if (isEmbeddedFont(_textStyle.fontName) == true) {
-                    format.font = Assets.getFont(_textStyle.fontName).fontName;
-                } else {
-                    format.font = _textStyle.fontName;
-                }
-
+            if (_fontInfo != null && format.font != _fontInfo.data) {
+                format.font = _fontInfo.data;
                 measureTextRequired = true;
             }
 
@@ -133,10 +130,6 @@ class TextDisplayBase {
     //***********************************************************************************************************
     // Util functions
     //***********************************************************************************************************
-
-    private static inline function isEmbeddedFont(name:String) {
-        return (name != "_sans" && name != "_serif" && name != "_typewriter");
-    }
 
     private static function textAlign(s:String):TextFormatAlign {
         if (s == null) {
