@@ -1,0 +1,14 @@
+{
+    "name": "haxeui-nme",
+    "url": "https://github.com/haxeui/haxeui-nme",
+    "license": "MIT",
+    "tags": ["ui", "gui", "nme"],
+    "description": "The NME backend of the HaxeUI framework",
+    "version": "0.0.1",
+    "releasenote": "Initial release",
+    "contributors": ["haxeui", "ianharrigan", "aW4KeNiNG", "ibilon"],
+    "dependencies": {
+        "haxeui-core": "",
+        "nme": ""
+    }
+  }
