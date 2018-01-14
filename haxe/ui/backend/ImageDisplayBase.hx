@@ -93,7 +93,7 @@ class ImageDisplayBase {
         if(_imageClipRect == null) {
             sprite.scrollRect = null;
         } else {
-            sprite.scrollRect = new openfl.geom.Rectangle(-_left, -_top, Math.fround(_imageClipRect.width), Math.fround(_imageClipRect.height));
+            sprite.scrollRect = new flash.geom.Rectangle(-_left, -_top, Math.fround(_imageClipRect.width), Math.fround(_imageClipRect.height));
             sprite.x = _imageClipRect.left;
             sprite.y = _imageClipRect.top;
         }
