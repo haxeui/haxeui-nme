@@ -14,7 +14,7 @@ os:
   - linux
 
 haxe:
-  - "3.4.2"
+  - "3.4.4"
   - development
 
 before_install:
