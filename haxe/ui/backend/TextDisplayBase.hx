@@ -2,6 +2,7 @@ package haxe.ui.backend;
 
 import haxe.ui.assets.FontInfo;
 import haxe.ui.core.Component;
+import haxe.ui.core.TextDisplay.TextDisplayData;
 import haxe.ui.styles.Style;
 import nme.Assets;
 import nme.text.TextField;
@@ -11,6 +12,8 @@ import nme.text.TextFormat;
 import nme.text.TextFormatAlign;
 
 class TextDisplayBase {
+    private var _displayData:TextDisplayData = new TextDisplayData();
+    
     public var textField:TextField;
     public var parentComponent:Component;
 
@@ -21,8 +24,6 @@ class TextDisplayBase {
         textField = createTextField();
 
         _text = "";
-        _multiline = false;
-        _wordWrap = false;
     }
 
     private function createTextField() {
@@ -43,8 +44,6 @@ class TextDisplayBase {
     private var _textWidth:Float = 0;
     private var _textHeight:Float = 0;
     private var _textStyle:Style;
-    private var _multiline:Bool = true;
-    private var _wordWrap:Bool = false;
     private var _fontInfo:FontInfo = null;
     
     //***********************************************************************************************************
@@ -85,15 +84,13 @@ class TextDisplayBase {
         textField.defaultTextFormat = format;
         textField.setTextFormat(format);
 
-        if (textField.wordWrap != _wordWrap) {
-            textField.wordWrap = _wordWrap;
-
+        if (textField.wordWrap != _displayData.wordWrap) {
+            textField.wordWrap = _displayData.wordWrap;
             measureTextRequired = true;
         }
 
-        if (textField.multiline != _multiline) {
-            textField.multiline = _multiline;
-
+        if (textField.multiline != _displayData.multiline) {
+            textField.multiline = _displayData.multiline;
             measureTextRequired = true;
         }
 
