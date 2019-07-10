@@ -13,7 +13,7 @@ class FilterConverter {
         var output:BitmapFilter = null;
         if (Std.is(input, haxe.ui.filters.DropShadow)) {
             var inputDropShadow:haxe.ui.filters.DropShadow = cast(input, haxe.ui.filters.DropShadow);
-            output = new DropShadowFilter(inputDropShadow.distance + 2,
+            output = new DropShadowFilter(inputDropShadow.distance + 1,
                                           inputDropShadow.angle,
                                           inputDropShadow.color,
                                           inputDropShadow.alpha * 2,
@@ -22,6 +22,10 @@ class FilterConverter {
                                           inputDropShadow.strength,
                                           inputDropShadow.quality,
                                           inputDropShadow.inner);
+                                            
+            if (inputDropShadow.inner == true) {
+                cast(output, DropShadowFilter).distance += 1;
+            }
         } else if (Std.is(input, haxe.ui.filters.Blur)) {
             var inputBlur:haxe.ui.filters.Blur = cast(input, haxe.ui.filters.Blur);
             output = new BlurFilter(inputBlur.amount, inputBlur.amount);

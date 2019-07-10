@@ -11,3 +11,7 @@
 .scrollview, .listview {
     padding: 1px;
 }
+
+.dialog {
+    filter: none;
+}

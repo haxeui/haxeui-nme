@@ -166,7 +166,6 @@ class ComponentImpl extends ComponentBase {
         }
 
         if (style.filter != null && style.filter.length > 0) {
-            trace(">>>>>>>> GOT FILTER");
             var array = [];
             for (fa in style.filter) {
                 var f = FilterConverter.convertFilter(fa);
