@@ -1,22 +1,16 @@
 package haxe.ui.backend;
 
-import haxe.ui.backend.TextDisplayBase;
-import haxe.ui.components.TextArea;
-import haxe.ui.components.TextField;
-import haxe.ui.core.TextInput.TextInputData;
 import nme.events.Event;
 import nme.text.TextField;
 import nme.text.TextFieldAutoSize;
 import nme.text.TextFieldType;
 
-class TextInputBase extends TextDisplayBase {
-    private var _inputData:TextInputData = new TextInputData();
-    
-    @:access(haxe.ui.components.TextArea)
+class TextInputImpl extends TextDisplayImpl {
     public function new() {
         super();
 
-         textField.addEventListener(Event.CHANGE, onChange);
+        textField.addEventListener(Event.CHANGE, onChange);
+        textField.addEventListener(Event.SCROLL, onScroll);
     }
 
     private override function createTextField() {
@@ -31,6 +25,18 @@ class TextInputBase extends TextDisplayBase {
         return tf;
     }
 
+    public override function focus() {
+        if (textField.stage != null) {
+			textField.stage.focus = textField;
+		}
+    }
+    
+    public override function blur() {
+        if (textField.stage != null) {
+			textField.stage.focus = null;
+		}
+    }
+    
     //***********************************************************************************************************
     // Validation functions
     //***********************************************************************************************************
@@ -55,12 +61,22 @@ class TextInputBase extends TextDisplayBase {
             textField.displayAsPassword = _inputData.password;
         }
 
+        if (parentComponent.disabled) {
+            textField.selectable = false;
+        } else {
+            textField.selectable = true;
+        }
+        
         return measureTextRequired;
     }
 
+    private override function validatePosition() {
+        textField.x = _left;// - 2 + (PADDING_X / 2);
+        textField.y = _top - 1;// - 2 + (PADDING_Y / 2);
+    }
+    
     private override function measureText() {
         super.measureText();
-        
         _inputData.hscrollMax = _textWidth - _width;
         _inputData.hscrollPageSize = (_width * _inputData.hscrollMax) / _textWidth;
         
@@ -70,5 +86,21 @@ class TextInputBase extends TextDisplayBase {
     
     private function onChange(e) {
         _text = textField.text;
+        
+        measureText();
+        
+        if (_inputData.onChangedCallback != null) {
+            _inputData.onChangedCallback();
+        }
+    }
+    
+    private function onScroll(e) {
+        return;
+        _inputData.hscrollPos = textField.scrollH;
+        _inputData.vscrollPos = textField.scrollV;
+        
+        if (_inputData.onScrollCallback != null) {
+            _inputData.onScrollCallback();
+        }
     }
 }
