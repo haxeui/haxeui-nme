@@ -1,48 +1,45 @@
 package haxe.ui.backend;
 
-import haxe.ui.containers.dialogs.Dialog;
-import haxe.ui.containers.dialogs.DialogButton;
-import haxe.ui.core.Component;
-import haxe.ui.core.KeyboardEvent;
-import haxe.ui.core.MouseEvent;
-import haxe.ui.core.UIEvent;
 import haxe.ui.backend.nme.EventMapper;
-import nme.display.StageAlign;
-import nme.display.StageScaleMode;
+import haxe.ui.core.Component;
+import haxe.ui.events.KeyboardEvent;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
 import nme.Lib;
+import nme.display.DisplayObjectContainer;
+import nme.display.StageAlign;
+import nme.display.StageQuality;
+import nme.display.StageScaleMode;
 
-class ScreenBase {
+class ScreenImpl extends ScreenBase {
     private var _mapping:Map<String, UIEvent->Void>;
 
     public function new() {
-        Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-        Lib.current.stage.align = StageAlign.TOP_LEFT;
         _mapping = new Map<String, UIEvent->Void>();
-        Lib.current.stage.addEventListener(nme.events.Event.RESIZE, onStageResize);
     }
 
-    public var options(default, default):ToolkitOptions;
-
-    public var width(get, null):Float;
-    public function get_width():Float {
-        return Lib.current.stage.stageWidth / Toolkit.scaleX;
+    private override function get_width():Float {
+        if (container == Lib.current.stage) {
+            return Lib.current.stage.stageWidth / Toolkit.scaleX;
+        }
+        return container.width / Toolkit.scaleX;
     }
 
-    public var height(get, null):Float;
-    public function get_height() {
-        return Lib.current.stage.stageHeight / Toolkit.scaleY;
+    private override function get_height():Float {
+        if (container == Lib.current.stage) {
+            return Lib.current.stage.stageHeight / Toolkit.scaleY;
+        }
+        return container.height / Toolkit.scaleY;
     }
 
-    public var dpi(get, null):Float;
-    private function get_dpi():Float {
-        return nme.system.Capabilities.screenDPI;
+    private override function get_dpi():Float {
+        return 72;// System.getDisplay(0).dpi;
     }
 
-    public var focus(get, set):Component;
-    private function get_focus():Component {
+    private override function get_focus():Component {
         return cast Lib.current.stage.focus;
     }
-    private function set_focus(value:Component):Component {
+    private override function set_focus(value:Component):Component {
         if (value != null && value.hasTextInput()) {
             Lib.current.stage.focus = value.getTextInput().textField;
         } else {
@@ -51,44 +48,38 @@ class ScreenBase {
         return value;
     }
 
-    public var title(get,set):String;
-    private inline function get_title():String {
-        #if js
-        return js.Browser.document.title;
-        #else
+    private override function set_title(s:String):String {
+        #if (flash || android || ios )
         trace("WARNING: this platform doesnt support dynamic titles");
-        return "";
         #end
-    }
-    private inline function set_title(s:String):String {
-        #if js
-        js.Browser.document.title = s;
+        Lib.current.stage.window.title = s;
         return s;
-        #else
+    }
+    private override function get_title():String {
+        #if (flash || android || ios )
         trace("WARNING: this platform doesnt support dynamic titles");
-        return "";
         #end
+        return Lib.current.stage.window.title;
     }
 
-    private var _topLevelComponents:Array<Component> = new Array<Component>();
-    public function addComponent(component:Component) {
+    public override function addComponent(component:Component) {
         component.scaleX = Toolkit.scaleX;
         component.scaleY = Toolkit.scaleY;
         _topLevelComponents.push(component);
-        Lib.current.stage.addChild(component);
-        onStageResize(null);
+        container.addChild(component);
+        onContainerResize(null);
     }
 
-    public function removeComponent(component:Component) {
+    public override function removeComponent(component:Component) {
         _topLevelComponents.remove(component);
-        Lib.current.stage.removeChild(component);
+        container.removeChild(component);
     }
 
-    private function handleSetComponentIndex(child:Component, index:Int) {
-        Lib.current.stage.setChildIndex(child, index);
+    private override function handleSetComponentIndex(child:Component, index:Int) {
+        container.setChildIndex(child, index);
     }
 
-    private function onStageResize(event:nme.events.Event) {
+    private function onContainerResize(event:nme.events.Event) {
         for (c in _topLevelComponents) {
             if (c.percentWidth > 0) {
                 c.width = (this.width * c.percentWidth) / 100;
@@ -97,34 +88,45 @@ class ScreenBase {
                 c.height = (this.height * c.percentHeight) / 100;
             }
         }
+        __onStageResize();
     }
 
-    //***********************************************************************************************************
-    // Dialogs
-    //***********************************************************************************************************
-    public function messageDialog(message:String, title:String = null, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
-        return null;
-    }
+    private var _containerReady:Bool = false;
+    public var container(get, null):DisplayObjectContainer;
+    private function get_container():DisplayObjectContainer {
+        var c = null;
+        if (options == null || options.container == null) {
+            c = Lib.current.stage;
+        } else {
+            c = options.container;
+        }
 
-    public function showDialog(content:Component, options:Dynamic = null, callback:DialogButton->Void = null):Dialog {
-        return null;
-    }
+        if (_containerReady == false) {
+            c.stage.quality = StageQuality.BEST;
+            c.scaleMode = StageScaleMode.NO_SCALE;
+            c.align = StageAlign.TOP_LEFT;
+            c.addEventListener(nme.events.Event.RESIZE, onContainerResize);
+            _containerReady = true;
+        }
 
-    public function hideDialog(dialog:Dialog):Bool {
-        return false;
+        return c;
     }
 
     //***********************************************************************************************************
     // Events
     //***********************************************************************************************************
-    private function supportsEvent(type:String):Bool {
+    private override function supportsEvent(type:String):Bool {
+        if (type == UIEvent.RESIZE) {
+            return true;
+        }
         return EventMapper.HAXEUI_TO_NME.get(type) != null;
     }
 
-    private function mapEvent(type:String, listener:UIEvent->Void) {
+    private override function mapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
             case MouseEvent.MOUSE_MOVE | MouseEvent.MOUSE_OVER | MouseEvent.MOUSE_OUT
-                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK:
+                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK
+                | MouseEvent.RIGHT_MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_UP | MouseEvent.RIGHT_CLICK:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
                     Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
@@ -135,19 +137,28 @@ class ScreenBase {
                     _mapping.set(type, listener);
                     Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onKeyEvent);
                 }
+                
+            case UIEvent.RESIZE:
+                if (_mapping.exists(type) == false) {
+                    _mapping.set(type, listener);
+                }
         }
     }
 
-    private function unmapEvent(type:String, listener:UIEvent->Void) {
+    private override function unmapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
             case MouseEvent.MOUSE_MOVE | MouseEvent.MOUSE_OVER | MouseEvent.MOUSE_OUT
-                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK:
+                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK
+                | MouseEvent.RIGHT_MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_UP | MouseEvent.RIGHT_CLICK:
                 _mapping.remove(type);
                 Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
 
             case KeyboardEvent.KEY_DOWN | KeyboardEvent.KEY_UP:
                 _mapping.remove(type);
                 Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onKeyEvent);
+                
+            case UIEvent.RESIZE:
+                _mapping.remove(type);
         }
     }
 
@@ -161,6 +172,8 @@ class ScreenBase {
                 mouseEvent.screenX = event.stageX / Toolkit.scaleX;
                 mouseEvent.screenY = event.stageY / Toolkit.scaleY;
                 mouseEvent.buttonDown = event.buttonDown;
+                mouseEvent.ctrlKey = event.ctrlKey;
+                mouseEvent.shiftKey = event.shiftKey;
                 fn(mouseEvent);
             }
         }
@@ -174,8 +187,20 @@ class ScreenBase {
                 var keyboardEvent = new KeyboardEvent(type);
                 keyboardEvent._originalEvent = event;
                 keyboardEvent.keyCode = event.keyCode;
+                keyboardEvent.ctrlKey = event.ctrlKey;
                 keyboardEvent.shiftKey = event.shiftKey;
                 fn(keyboardEvent);
+            }
+        }
+    }
+    
+    private function __onStageResize() {
+        var type:String = UIEvent.RESIZE;
+        if (type != null) {
+            var fn = _mapping.get(type);
+            if (fn != null) {
+                var uiEvent = new UIEvent(type);
+                fn(uiEvent);
             }
         }
     }

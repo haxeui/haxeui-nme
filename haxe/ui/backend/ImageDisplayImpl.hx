@@ -1,31 +1,23 @@
 package haxe.ui.backend;
 
+import haxe.ui.geom.Rectangle;
+import nme.display.BitmapData;
 import haxe.ui.assets.ImageInfo;
 import haxe.ui.core.Component;
-import haxe.ui.util.Rectangle;
 import nme.display.Bitmap;
-import nme.display.BitmapData;
 import nme.display.Sprite;
 
-class ImageDisplayBase {
-    public var parentComponent:Component;
-    public var aspectRatio:Float = 1; // width x height
+class ImageDisplayImpl extends ImageBase {
     public var sprite:Sprite;
 
     private var _bmp:Bitmap;
 
     public function new() {
+        super();
         sprite = new Sprite();
     }
 
-    private var _left:Float = 0;
-    private var _top:Float = 0;
-    private var _imageWidth:Float = 0;
-    private var _imageHeight:Float = 0;
-    private var _imageInfo:ImageInfo;
-    private var _imageClipRect:Rectangle;
-
-    public function dispose():Void {
+    public override function dispose():Void {
         if (_bmp != null) {
             //_bmp.bitmapData.dispose();
             sprite.removeChild(_bmp);
@@ -37,10 +29,27 @@ class ImageDisplayBase {
         return _imageInfo != null && Std.is(_imageInfo.data, BitmapData);
     }
 
+    #if svg
+
+    private inline function containsSVGInfo():Bool {
+        return _imageInfo != null && Std.is(_imageInfo.data, format.SVG);
+    }
+
+    private function renderSVG():Void {
+        sprite.graphics.clear();
+        if(_imageInfo != null && _imageWidth > 0 && _imageHeight > 0) {
+            var svg:format.SVG = cast _imageInfo.data;
+            svg.render(sprite.graphics, 0, 0, Std.int(_imageWidth), Std.int(_imageHeight));
+        }
+    }
+
+    #end
+
     //***********************************************************************************************************
     // Validation functions
     //***********************************************************************************************************
-    private function validateData() {
+
+    private override function validateData() {
         if (_imageInfo != null) {
             if(containsBitmapDataInfo()) {
                 if (_bmp == null) {
@@ -53,6 +62,14 @@ class ImageDisplayBase {
                 _imageHeight = _bmp.height;
 
             }
+            #if svg
+            else if(containsSVGInfo()) {
+                var svg:format.SVG = cast _imageInfo.data;
+                _imageWidth = svg.data.width;
+                _imageHeight = svg.data.height;
+                renderSVG();
+            }
+            #end
         } else {
             if (_bmp != null && sprite.contains(_bmp) == true) {
                 sprite.removeChild(_bmp);
@@ -67,7 +84,7 @@ class ImageDisplayBase {
         }
     }
 
-    private function validatePosition() {
+    private override function validatePosition() {
         if (sprite.x != _left) {
             sprite.x = _left;
         }
@@ -77,7 +94,7 @@ class ImageDisplayBase {
         }
     }
 
-    private function validateDisplay() {
+    private override function validateDisplay() {
         if(containsBitmapDataInfo()) {
             var scaleX:Float = _imageWidth / _bmp.bitmapData.width;
             if (_bmp.scaleX != scaleX) {
@@ -89,11 +106,16 @@ class ImageDisplayBase {
                 _bmp.scaleY = scaleY;
             }
         }
+        #if svg
+        else if(containsSVGInfo()) {
+            renderSVG();
+        }
+        #end
 
         if(_imageClipRect == null) {
             sprite.scrollRect = null;
         } else {
-            sprite.scrollRect = new flash.geom.Rectangle(-_left, -_top, Math.fround(_imageClipRect.width), Math.fround(_imageClipRect.height));
+            sprite.scrollRect = new nme.geom.Rectangle(-_left, -_top, Math.fround(_imageClipRect.width), Math.fround(_imageClipRect.height));
             sprite.x = _imageClipRect.left;
             sprite.y = _imageClipRect.top;
         }

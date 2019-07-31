@@ -1,26 +1,19 @@
 package haxe.ui.backend;
 
-import haxe.ui.assets.FontInfo;
-import haxe.ui.core.Component;
-import haxe.ui.core.TextDisplay.TextDisplayData;
-import haxe.ui.styles.Style;
-import nme.Assets;
 import nme.text.TextField;
 import nme.text.TextFieldAutoSize;
 import nme.text.TextFieldType;
 import nme.text.TextFormat;
-import nme.text.TextFormatAlign;
 
-class TextDisplayBase {
-    private var _displayData:TextDisplayData = new TextDisplayData();
-    
+class TextDisplayImpl extends TextBase {
+    private var PADDING_X:Int = 2;
+    private var PADDING_Y:Int = 2;
+
     public var textField:TextField;
-    public var parentComponent:Component;
-
-    private var PADDING_X:Int = 0;
-    private var PADDING_Y:Int = 0;
 
     public function new() {
+        super();
+
         textField = createTextField();
 
         _text = "";
@@ -36,32 +29,22 @@ class TextDisplayBase {
         return tf;
     }
 
-    private var _text:String;
-    private var _left:Float = 0;
-    private var _top:Float = 0;
-    private var _width:Float = 0;
-    private var _height:Float = 0;
-    private var _textWidth:Float = 0;
-    private var _textHeight:Float = 0;
-    private var _textStyle:Style;
-    private var _fontInfo:FontInfo = null;
-    
     //***********************************************************************************************************
     // Validation functions
     //***********************************************************************************************************
 
-    private function validateData() {
-        textField.text = _text;
+    private override function validateData() {
+        textField.text = normalizeText(_text);
     }
 
-    private function validateStyle():Bool {
+    private override function validateStyle():Bool {
         var measureTextRequired:Bool = false;
 
         var format:TextFormat = textField.getTextFormat();
 
         if (_textStyle != null) {
-            if (format.align != textAlign(_textStyle.textAlign)) {
-                format.align = textAlign(_textStyle.textAlign);
+            if (format.align != _textStyle.textAlign) {
+                format.align = _textStyle.textAlign;
             }
 
             var fontSizeValue = Std.int(_textStyle.fontSize);
@@ -78,6 +61,21 @@ class TextDisplayBase {
 
             if (format.color != _textStyle.color) {
                 format.color = _textStyle.color;
+            }
+            
+            if (format.bold != _textStyle.fontBold) {
+                format.bold = _textStyle.fontBold;
+                measureTextRequired = true;
+            }
+            
+            if (format.italic != _textStyle.fontItalic) {
+                format.italic = _textStyle.fontItalic;
+                measureTextRequired = true;
+            }
+            
+            if (format.underline != _textStyle.fontUnderline) {
+                format.underline = _textStyle.fontUnderline;
+                measureTextRequired = true;
             }
         }
 
@@ -97,23 +95,37 @@ class TextDisplayBase {
         return measureTextRequired;
     }
 
-    private function validatePosition() {
-        textField.x = _left - 2 + (PADDING_X / 2);
-        textField.y = _top - 2 + (PADDING_Y / 2);
+    private override function validatePosition() {
+        #if html5
+        textField.x = _left - PADDING_X + 0;
+        textField.y = _top - PADDING_Y + 0;
+        #elseif flash
+        textField.x = _left - PADDING_X + 0;
+        textField.y = _top - PADDING_Y + 0;
+        #else
+        textField.x = _left - PADDING_X + 0;
+        textField.y = _top - PADDING_Y + 1;
+        #end
     }
 
-    private function validateDisplay() {
-        if (textField.width != _width) {
-            textField.width = _width;
+    private override function validateDisplay() {
+        if (_width > 0 && textField.width != _width) {
+            textField.width = _width + PADDING_X;
         }
 
-        if (textField.height != _height) {
-            textField.height = _height;
+        if (_height > 0 && textField.height != _height) {
+            textField.height = _height + PADDING_Y;
         }
     }
 
-    private function measureText() {
+    private override function measureText() {
+        textField.width = _width;
+        
+        #if !flash
         _textWidth = textField.textWidth + PADDING_X;
+        #else
+        _textWidth = textField.textWidth;
+        #end
         _textHeight = textField.textHeight;
         if (_textHeight == 0) {
             var tmpText:String = textField.text;
@@ -121,25 +133,13 @@ class TextDisplayBase {
             _textHeight = textField.textHeight;
             textField.text = tmpText;
         }
+        #if !flash
         _textHeight += PADDING_Y;
+        #end
     }
-
-    //***********************************************************************************************************
-    // Util functions
-    //***********************************************************************************************************
-
-    private static function textAlign(s:String):TextFormatAlign {
-        if (s == null) {
-            return null;
-        }
-        
-        switch (s) {
-            case "center":
-                return TextFormatAlign.CENTER;
-            case "right":
-                return TextFormatAlign.RIGHT;
-            case _:
-        }
-        return TextFormatAlign.LEFT;
+    
+    private function normalizeText(text:String):String {
+        text = StringTools.replace(text, "\\n", "\n");
+        return text;
     }
 }

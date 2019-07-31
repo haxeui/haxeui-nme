@@ -42,7 +42,7 @@ install:
     - haxelib install nme
     - haxelib run nme setup -y
     - haxelib install hscript
-    # - haxelib dev haxeui-openfl $TRAVIS_BUILD_DIR
+    # - haxelib dev haxeui-nme $TRAVIS_BUILD_DIR
 
 script:
     - cd $TRAVIS_BUILD_DIR

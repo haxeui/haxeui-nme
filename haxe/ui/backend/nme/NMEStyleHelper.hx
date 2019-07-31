@@ -1,9 +1,9 @@
 package haxe.ui.backend.nme;
 
 import haxe.ui.assets.ImageInfo;
-import haxe.ui.components.Button.ButtonDefaultIconBehaviour;
+import haxe.ui.geom.Slice9;
+import haxe.ui.geom.Slice9.Slice9Rects;
 import haxe.ui.styles.Style;
-import haxe.ui.util.Slice9;
 import nme.display.BitmapData;
 import nme.display.GradientType;
 import nme.display.Graphics;
@@ -26,13 +26,19 @@ class NMEStyleHelper {
             return;
         }
 
+        /*
+        left = Math.fround(left);
+        top = Math.fround(top);
+        width = Math.fround(width);
+        height = Math.fround(height);
+        */
+
         left = Std.int(left);
         top = Std.int(top);
         width = Std.int(width);
         height = Std.int(height);
-
+        
         var rc:Rectangle = new Rectangle(top, left, width, height);
-
         var borderRadius:Float = 0;
         if (style.borderRadius != null) {
             borderRadius = style.borderRadius;
@@ -98,15 +104,15 @@ class NMEStyleHelper {
         var backgroundColor:Null<Int> = style.backgroundColor;
         var backgroundColorEnd:Null<Int> = style.backgroundColorEnd;
         var backgroundOpacity:Null<Float> = style.backgroundOpacity;
-        if(backgroundOpacity == null) {
-            backgroundOpacity = 1;
-        }
-
         #if html5 // TODO: fix for html5 not working with non-gradient fills
         if (backgroundColor != null && backgroundColorEnd == null) {
             backgroundColorEnd = backgroundColor;
         }
         #end
+
+        if(backgroundOpacity == null) {
+            backgroundOpacity = 1;
+        }
 
         if (backgroundColor != null) {
             if (backgroundColorEnd != null) {
@@ -137,7 +143,7 @@ class NMEStyleHelper {
                                             InterpolationMethod.LINEAR_RGB,
                                             0);
             } else {
-                graphics.beginFill(backgroundColor, 1);
+                graphics.beginFill(backgroundColor, backgroundOpacity);
             }
         }
 
@@ -158,9 +164,23 @@ class NMEStyleHelper {
         }
     }
 
-    private static function paintBitmapBackground(graphics:Graphics, bmpData:BitmapData, style:Style, rc:Rectangle) {
-        var fillBmp:BitmapData = bmpData;
+    private static function paintBitmapBackground(graphics:Graphics, data:ImageData, style:Style, rc:Rectangle) {
+        var fillBmp:BitmapData = null;
         var fillRect:Rectangle = rc;
+
+        if(Std.is(data, BitmapData)) {
+            fillBmp = cast data;
+        }
+        #if svg
+        else if(Std.is(data, format.SVG)) {
+            var svg:format.SVG = cast data;
+            var renderer = new format.svg.SVGRenderer (svg.data);
+            fillBmp = renderer.renderBitmap(rc);
+        }
+        #end
+        else {
+            return;
+        }
 
         var cacheId:String = style.backgroundImage;
         if (style.backgroundImageClipTop != null
@@ -251,8 +271,8 @@ class NMEStyleHelper {
             var w:Float = rc.width + borderSize;
             var h:Float = rc.height + borderSize;
             var rects:Slice9Rects = Slice9.buildRects(w, h, fillBmp.width, fillBmp.height, convertToHaxeUIRect(slice));
-            var srcRects:Array<Rectangle> = convertToOpenFLRectArr(rects.src);
-            var dstRects:Array<Rectangle> = convertToOpenFLRectArr(rects.dst);
+            var srcRects:Array<Rectangle> = convertToNMERectArr(rects.src);
+            var dstRects:Array<Rectangle> = convertToNMERectArr(rects.dst);
             for (i in 0...srcRects.length) {
                 var srcRect = srcRects[i];
                 var dstRect = dstRects[i];
@@ -292,20 +312,20 @@ class NMEStyleHelper {
 
     }
 
-    private static function convertToOpenFLRectArr(arr:Array<haxe.ui.util.Rectangle>):Array<Rectangle> {
+    private static function convertToNMERectArr(arr:Array<haxe.ui.geom.Rectangle>):Array<Rectangle> {
         var r:Array<Rectangle> = new Array<Rectangle>();
         for (a in arr) {
-            r.push(convertToOpenFLRect(a));
+            r.push(convertToNMERect(a));
         }
         return r;
     }
 
-    private static function convertToOpenFLRect(rc:haxe.ui.util.Rectangle):Rectangle {
+    private static function convertToNMERect(rc:haxe.ui.geom.Rectangle):Rectangle {
         return new Rectangle(rc.left, rc.top, rc.width, rc.height);
     }
 
-    private static function convertToHaxeUIRect(rc:Rectangle):haxe.ui.util.Rectangle {
-        return new haxe.ui.util.Rectangle(rc.x, rc.y, rc.width, rc.height);
+    private static function convertToHaxeUIRect(rc:Rectangle):haxe.ui.geom.Rectangle {
+        return new haxe.ui.geom.Rectangle(rc.x, rc.y, rc.width, rc.height);
     }
 
 }
