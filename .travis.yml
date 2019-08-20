@@ -22,7 +22,7 @@ before_install:
     - haxelib dev haxeui-core haxeui-core
 
     - haxelib install nme-dev
-    - haxelib install format
+    - haxelib install gm2d
     - haxelib install format
 
     # We need a git version of hxcpp for now
@@ -43,6 +43,12 @@ before_install:
 
     - git clone --branch $TRAVIS_BRANCH https://github.com/haxenme/nme.git --depth=1
     - haxelib dev nme nme
+    - cd nme/project
+    - neko build.n
+    - cd ../..
+    - cd nme/tools/nme
+    - haxe compile.hxml
+    - cd ../../..
 
 install:
     #- haxelib install hxcpp
