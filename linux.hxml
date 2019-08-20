@@ -13,5 +13,5 @@
 
 -cp .
 #--no-output 
---macro TravisBuild.addNmeClasspaths()
+#--macro TravisBuild.addNmeClasspaths()
 --macro haxe.macro.Compiler.include("haxe.ui", ["haxe.ui.macros"])
