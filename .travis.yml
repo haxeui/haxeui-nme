@@ -21,7 +21,8 @@ before_install:
     - git clone --branch $TRAVIS_BRANCH https://github.com/haxeui/haxeui-core.git --depth=1
     - haxelib dev haxeui-core haxeui-core
 
-    - haxelib install gm2d
+    - haxelib install nme-dev
+    - haxelib install format
     - haxelib install format
 
     # We need a git version of hxcpp for now
