@@ -47,4 +47,4 @@ install:
 script:
     - cd $TRAVIS_BUILD_DIR
     - printf "package;\n\nclass Main {\npublic static function main() {\n}\n}" > Main.hx
-    - haxe linux.hxml
+    - haxelib run nme build travis.nmml
