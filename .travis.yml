@@ -38,7 +38,7 @@ before_install:
     #- cd ../../..
 
 install:
-    # - haxelib install hxcpp
+    - haxelib install hxcpp
     - haxelib install nme
     - haxelib run nme setup -y
     - haxelib install hscript
