@@ -21,6 +21,9 @@ before_install:
     - git clone --branch $TRAVIS_BRANCH https://github.com/haxeui/haxeui-core.git --depth=1
     - haxelib dev haxeui-core haxeui-core
 
+    - git clone --branch $TRAVIS_BRANCH https://github.com/haxenme/nme.git --depth=1
+    - haxelib dev nme nme
+
     # We need a git version of hxcpp for now
     - git clone https://github.com/HaxeFoundation/hxcpp.git --depth=1
     - haxelib dev hxcpp hxcpp
@@ -39,7 +42,7 @@ before_install:
 
 install:
     #- haxelib install hxcpp
-    - haxelib install nme
+    #- haxelib install nme
     - haxelib run nme setup -y
     - haxelib install hscript
     # - haxelib dev haxeui-nme $TRAVIS_BUILD_DIR
