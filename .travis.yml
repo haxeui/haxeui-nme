@@ -21,39 +21,39 @@ before_install:
     - git clone --branch $TRAVIS_BRANCH https://github.com/haxeui/haxeui-core.git --depth=1
     - haxelib dev haxeui-core haxeui-core
 
-    - haxelib install nme-dev
-    - haxelib install gm2d
-    - haxelib install format
-    - haxelib install nme-tookit
+    #- haxelib install nme-dev
+    #- haxelib install gm2d
+    #- haxelib install format
+    #- haxelib install nme-tookit
 
     # We need a git version of hxcpp for now
-    - git clone https://github.com/HaxeFoundation/hxcpp.git --depth=1
-    - haxelib dev hxcpp hxcpp
-    - cd hxcpp/tools/hxcpp
-    - haxe compile.hxml
-    - cd ../build
-    - haxe compile.hxml
-    - cd ../../project
-    - neko build.n clean
-    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-        neko build.n linux-64;
-        elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-        neko build.n;
-        fi
-    - cd ../../..
+    #- git clone https://github.com/HaxeFoundation/hxcpp.git --depth=1
+    #- haxelib dev hxcpp hxcpp
+    #- cd hxcpp/tools/hxcpp
+    #- haxe compile.hxml
+    #- cd ../build
+    #- haxe compile.hxml
+    #- cd ../../project
+    #- neko build.n clean
+    #- if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+    #    neko build.n linux-64;
+    #    elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+    #    neko build.n;
+    #    fi
+    #- cd ../../..
 
-    - git clone --branch $TRAVIS_BRANCH https://github.com/haxenme/nme.git --depth=1
-    - haxelib dev nme nme
-    - cd nme/project
-    - neko build.n
-    - cd ../..
-    - cd nme/tools/nme
-    - haxe compile.hxml
-    - cd ../../..
+    #- git clone --branch $TRAVIS_BRANCH https://github.com/haxenme/nme.git --depth=1
+    #- haxelib dev nme nme
+    #- cd nme/project
+    #- neko build.n
+    #- cd ../..
+    #- cd nme/tools/nme
+    #- haxe compile.hxml
+    #- cd ../../..
 
 install:
-    #- haxelib install hxcpp
-    #- haxelib install nme
+    - haxelib install hxcpp
+    - haxelib install nme
     - haxelib run nme setup -y -f
     - haxelib install hscript
     # - haxelib dev haxeui-nme $TRAVIS_BUILD_DIR
