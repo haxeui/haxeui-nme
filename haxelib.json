@@ -1,14 +1,23 @@
 {
-    "name": "haxeui-nme",
-    "url": "https://github.com/haxeui/haxeui-nme",
-    "license": "MIT",
-    "tags": ["ui", "gui", "nme"],
-    "description": "The NME backend of the HaxeUI framework",
-    "version": "0.0.2",
-    "releasenote": "Enhanced text input support",
-    "contributors": ["haxeui", "ianharrigan", "_ibilon", "aW4KeNiNG"],
+    "contributors": [
+        "haxeui",
+        "ianharrigan",
+        "_ibilon",
+        "aW4KeNiNG"
+    ],
+    "version": "1.0.0",
     "dependencies": {
-        "haxeui-core": "",
-        "nme": ""
-    }
-  }
+        "nme": "",
+        "haxeui-core": ""
+    },
+    "releasenote": "Official release",
+    "tags": [
+        "ui",
+        "gui",
+        "nme"
+    ],
+    "license": "MIT",
+    "name": "haxeui-nme",
+    "description": "The NME backend of the HaxeUI framework",
+    "url": "https://github.com/haxeui/haxeui-nme"
+}
