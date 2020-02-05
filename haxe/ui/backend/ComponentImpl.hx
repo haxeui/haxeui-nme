@@ -11,8 +11,10 @@ import haxe.ui.core.TextInput;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.UIEvent;
+import haxe.ui.geom.Point;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.styles.Style;
+import nme.display.DisplayObjectContainer;
 import nme.display.Sprite;
 import nme.events.Event;
 import nme.filters.DropShadowFilter;
@@ -28,13 +30,36 @@ class ComponentImpl extends ComponentBase {
         #end
         _eventMap = new Map<String, UIEvent->Void>();
 
+        #if mobile
+        cast(this, Component).addClass(":mobile");
+        #end
+        
         addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
     }
 
+    @:access(haxe.ui.backend.ScreenImpl)
     private function onAddedToStage(event:Event) {
+        removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+        var component:Component = cast(this, Component);
+        if (component.parentComponent == null && Screen.instance.rootComponents.indexOf(component) == -1) {
+            Screen.instance.rootComponents.push(component);
+            Screen.instance._topLevelComponents.push(component); // TODO: look into removing and using rootComponents only, order / ready() is important
+            Screen.instance.onContainerResize(null);
+        }
         recursiveReady();
     }
 
+    @:access(haxe.ui.backend.ScreenImpl)
+    private function onRemovedFromStage(event:Event) {
+        removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+        var component:Component = cast(this, Component);
+        if (component.parentComponent == null && Screen.instance.rootComponents.indexOf(component) != -1) {
+            Screen.instance.rootComponents.remove(component);
+            Screen.instance._topLevelComponents.remove(component); // TODO: look into removing and using rootComponents only, order / ready() is important
+        }
+    }
+    
     private function recursiveReady() {
         removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
         var component:Component = cast(this, Component);
@@ -73,9 +98,9 @@ class ComponentImpl extends ComponentBase {
             this.scrollRect = null;
         } else {
             this.scrollRect = new nme.geom.Rectangle(Math.fround(value.left),
-                                                        Math.fround(value.top),
-                                                        Math.fround(value.width),
-                                                        Math.fround(value.height));
+                                                     Math.fround(value.top),
+                                                     Math.fround(value.width),
+                                                     Math.fround(value.height));
         }
     }
 
@@ -204,6 +229,23 @@ class ComponentImpl extends ComponentBase {
         }
     }
 
+    private override function getComponentOffset():Point {
+        var p:DisplayObjectContainer = this;
+        var s:DisplayObjectContainer = null;
+        while (p != null) {
+            if (Std.is(p, ComponentImpl) == false) {
+                s = p;
+                break;
+            }
+            p = p.parent;
+        }
+        if (s == null)  {
+            return new Point(0, 0);
+        }
+        var globalPoint = s.localToGlobal(new openfl.geom.Point(0, 0));
+        return new Point(globalPoint.x, globalPoint.y);
+    }
+    
     //***********************************************************************************************************
     // Events
     //***********************************************************************************************************

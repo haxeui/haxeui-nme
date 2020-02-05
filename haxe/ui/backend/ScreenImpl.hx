@@ -65,9 +65,11 @@ class ScreenImpl extends ScreenBase {
     public override function addComponent(component:Component) {
         component.scaleX = Toolkit.scaleX;
         component.scaleY = Toolkit.scaleY;
-        _topLevelComponents.push(component);
-        container.addChild(component);
-        onContainerResize(null);
+        if (_topLevelComponents.indexOf(component) == -1) {
+            _topLevelComponents.push(component);
+            container.addChild(component);
+            onContainerResize(null);
+        }
     }
 
     public override function removeComponent(component:Component) {
@@ -79,13 +81,13 @@ class ScreenImpl extends ScreenBase {
         container.setChildIndex(child, index);
     }
 
-    private function onContainerResize(event:nme.events.Event) {
+    private function onContainerResize(event:openfl.events.Event) {
         for (c in _topLevelComponents) {
             if (c.percentWidth > 0) {
-                c.width = (this.width * c.percentWidth) / 100;
+                c.width = ((this.width / Toolkit.scaleX) * c.percentWidth) / 100;
             }
             if (c.percentHeight > 0) {
-                c.height = (this.height * c.percentHeight) / 100;
+                c.height = ((this.height / Toolkit.scaleY) * c.percentHeight) / 100;
             }
         }
         __onStageResize();
