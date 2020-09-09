@@ -20,16 +20,16 @@ class ScreenImpl extends ScreenBase {
 
     private override function get_width():Float {
         if (container == Lib.current.stage) {
-            return Lib.current.stage.stageWidth / Toolkit.scaleX;
+            return Lib.current.stage.stageWidth;
         }
-        return container.width / Toolkit.scaleX;
+        return container.width;
     }
 
     private override function get_height():Float {
         if (container == Lib.current.stage) {
-            return Lib.current.stage.stageHeight / Toolkit.scaleY;
+            return Lib.current.stage.stageHeight;
         }
-        return container.height / Toolkit.scaleY;
+        return container.height;
     }
 
     private override function get_dpi():Float {
@@ -39,6 +39,7 @@ class ScreenImpl extends ScreenBase {
     private override function get_focus():Component {
         return cast Lib.current.stage.focus;
     }
+    
     private override function set_focus(value:Component):Component {
         if (value != null && value.hasTextInput()) {
             Lib.current.stage.focus = value.getTextInput().textField;
@@ -65,9 +66,11 @@ class ScreenImpl extends ScreenBase {
     public override function addComponent(component:Component):Component {
         component.scaleX = Toolkit.scaleX;
         component.scaleY = Toolkit.scaleY;
-        _topLevelComponents.push(component);
-        container.addChild(component);
-        onContainerResize(null);
+        if (_topLevelComponents.indexOf(component) == -1) {
+            _topLevelComponents.push(component);
+            container.addChild(component);
+            onContainerResize(null);
+        }
         return component;
     }
 
@@ -84,17 +87,17 @@ class ScreenImpl extends ScreenBase {
     private function onContainerResize(event:nme.events.Event) {
         for (c in _topLevelComponents) {
             if (c.percentWidth > 0) {
-                c.width = (this.width * c.percentWidth) / 100;
+                c.width = ((this.width) * c.percentWidth) / 100;
             }
             if (c.percentHeight > 0) {
-                c.height = (this.height * c.percentHeight) / 100;
+                c.height = ((this.height) * c.percentHeight) / 100;
             }
         }
         __onStageResize();
     }
 
     private var _containerReady:Bool = false;
-    public var container(get, null):DisplayObjectContainer;
+    private var container(get, null):DisplayObjectContainer;
     private function get_container():DisplayObjectContainer {
         var c = null;
         if (options == null || options.container == null) {
@@ -127,7 +130,7 @@ class ScreenImpl extends ScreenBase {
     private override function mapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
             case MouseEvent.MOUSE_MOVE | MouseEvent.MOUSE_OVER | MouseEvent.MOUSE_OUT
-                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK
+                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK | MouseEvent.DBL_CLICK
                 | MouseEvent.RIGHT_MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_UP | MouseEvent.RIGHT_CLICK:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
@@ -150,7 +153,7 @@ class ScreenImpl extends ScreenBase {
     private override function unmapEvent(type:String, listener:UIEvent->Void) {
         switch (type) {
             case MouseEvent.MOUSE_MOVE | MouseEvent.MOUSE_OVER | MouseEvent.MOUSE_OUT
-                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK
+                | MouseEvent.MOUSE_DOWN | MouseEvent.MOUSE_UP | MouseEvent.CLICK | MouseEvent.DBL_CLICK
                 | MouseEvent.RIGHT_MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_UP | MouseEvent.RIGHT_CLICK:
                 _mapping.remove(type);
                 Lib.current.stage.removeEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);

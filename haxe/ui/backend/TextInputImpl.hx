@@ -1,6 +1,8 @@
 package haxe.ui.backend;
 
-import nme.events.Event;
+import haxe.ui.data.DataSource;
+import haxe.ui.validation.InvalidationFlags;
+import openfl.events.Event;
 import nme.text.TextField;
 import nme.text.TextFieldAutoSize;
 import nme.text.TextFieldType;
@@ -11,6 +13,8 @@ class TextInputImpl extends TextDisplayImpl {
 
         textField.addEventListener(Event.CHANGE, onChange);
         textField.addEventListener(Event.SCROLL, onScroll);
+        _inputData.vscrollPageStep = 1;
+        _inputData.vscrollNativeWheel = true;
     }
 
     private override function createTextField() {
@@ -37,20 +41,58 @@ class TextInputImpl extends TextDisplayImpl {
 		}
     }
     
+    private override function set_dataSource(value:DataSource<String>):DataSource<String> {
+        if (_dataSource != null) {
+            _dataSource.onAdd = null;
+            _dataSource.onChange = null;
+        }
+        _dataSource = value;
+        if (_dataSource != null) {
+            _dataSource.onAdd = onDataSourceAdd;
+            _dataSource.onClear = onDataSourceClear;
+        }
+        return value;
+    }
+    
+    private function onDataSourceAdd(s:String) {
+        textField.appendText(s);
+        parentComponent.text = textField.text;
+        measureText();
+        parentComponent.syncComponentValidation();
+    }
+    
+    private function onDataSourceClear() {
+        textField.text = "";
+        parentComponent.text = "";
+        measureText();
+        parentComponent.syncComponentValidation();
+    }
+    
     //***********************************************************************************************************
     // Validation functions
     //***********************************************************************************************************
     private override function validateData() {
+        textField.removeEventListener(Event.SCROLL, onScroll);
+        
         super.validateData();
         
-        var hscrollValue:Int = Std.int(_inputData.hscrollPos + 1);
+        var changed = false;
+        var hscrollValue:Int = Std.int(_inputData.hscrollPos);
         if (textField.scrollH != hscrollValue) {
             textField.scrollH = hscrollValue;
+            changed = true;
         }
 
-        var vscrollValue:Int = Std.int(_inputData.vscrollPos + 1);
+        var vscrollValue:Int = Std.int(_inputData.vscrollPos);
         if (textField.scrollV != vscrollValue) {
             textField.scrollV = vscrollValue;
+            changed = true;
+        }
+        
+        textField.addEventListener(Event.SCROLL, onScroll);
+        
+        if (changed == true) {
+            onScroll(null);
         }
     }
     
@@ -71,16 +113,31 @@ class TextInputImpl extends TextDisplayImpl {
     }
 
     private override function validatePosition() {
-        textField.x = _left;// - 2 + (PADDING_X / 2);
-        textField.y = _top - 1;// - 2 + (PADDING_Y / 2);
+        _left = Math.round(_left);
+        _top = Math.round(_top);
+        
+        #if html5
+        textField.x = _left - 3;
+        textField.y = _top - 2;
+        #elseif flash
+        textField.x = _left;
+        textField.y = _top;
+        #else
+        textField.x = _left - 3;
+        textField.y = _top - 3;
+        #end
     }
     
     private override function measureText() {
         super.measureText();
-        _inputData.hscrollMax = _textWidth - _width;
-        _inputData.hscrollPageSize = (_width * _inputData.hscrollMax) / _textWidth;
         
-        _inputData.vscrollMax = _textHeight - _height;
+        _inputData.hscrollMax = textField.maxScrollH;
+        // see below
+        _inputData.hscrollPageSize = (_width * _inputData.hscrollMax) / _textWidth;
+
+        _inputData.vscrollMax = textField.maxScrollV;
+        // cant have page size yet as there seems to be an openfl issue with bottomScrollV
+        // https://github.com/openfl/openfl/issues/2220
         _inputData.vscrollPageSize = (_height * _inputData.vscrollMax) / _textHeight;
     }
     
@@ -95,9 +152,8 @@ class TextInputImpl extends TextDisplayImpl {
     }
     
     private function onScroll(e) {
-        return;
         _inputData.hscrollPos = textField.scrollH;
-        _inputData.vscrollPos = textField.scrollV;
+        _inputData.vscrollPos = textField.scrollV - 1;
         
         if (_inputData.onScrollCallback != null) {
             _inputData.onScrollCallback();
