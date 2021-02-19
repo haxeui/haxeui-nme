@@ -26,13 +26,13 @@ class ImageDisplayImpl extends ImageBase {
     }
 
     private inline function containsBitmapDataInfo():Bool {
-        return _imageInfo != null && Std.is(_imageInfo.data, BitmapData);
+        return _imageInfo != null && (_imageInfo.data is BitmapData);
     }
 
     #if svg
 
     private inline function containsSVGInfo():Bool {
-        return _imageInfo != null && Std.is(_imageInfo.data, format.SVG);
+        return _imageInfo != null && (_imageInfo.data is format.SVG);
     }
 
     private function renderSVG():Void {
