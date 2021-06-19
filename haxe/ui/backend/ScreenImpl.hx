@@ -66,8 +66,8 @@ class ScreenImpl extends ScreenBase {
     public override function addComponent(component:Component):Component {
         component.scaleX = Toolkit.scaleX;
         component.scaleY = Toolkit.scaleY;
-        if (_topLevelComponents.indexOf(component) == -1) {
-            _topLevelComponents.push(component);
+        if (rootComponents.indexOf(component) == -1) {
+            rootComponents.push(component);
             container.addChild(component);
             onContainerResize(null);
         }
@@ -75,7 +75,7 @@ class ScreenImpl extends ScreenBase {
     }
 
     public override function removeComponent(component:Component):Component {
-        _topLevelComponents.remove(component);
+        rootComponents.remove(component);
         container.removeChild(component);
         return component;
     }
@@ -85,13 +85,8 @@ class ScreenImpl extends ScreenBase {
     }
 
     private function onContainerResize(event:nme.events.Event) {
-        for (c in _topLevelComponents) {
-            if (c.percentWidth > 0) {
-                c.width = ((this.width) * c.percentWidth) / 100;
-            }
-            if (c.percentHeight > 0) {
-                c.height = ((this.height) * c.percentHeight) / 100;
-            }
+        for (c in rootComponents) {
+            resizeComponent(c);
         }
         __onStageResize();
     }
