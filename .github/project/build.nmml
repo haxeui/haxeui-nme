@@ -4,15 +4,17 @@
     <app main="Main" file="Main" path="build/nme" />
 
     <window background="#FFFFFF" fps="60" />
-    <window width="800" height="600" unless="mobile" />
+    <window width="800" height="600" if="desktop" />
+    <window width="0" height="0" if="html5" />
 
-    <haxeflag name="--macro" value="haxe.macro.Compiler.include('haxe.ui', ['haxe.ui.macros'])" />
-    
     <!-- classpath, haxe libs -->
-    <source path="." />
+    <source path="src" />
 
     <haxelib name="nme" />
-    <haxelib name="hscript" />
+    <haxelib name="actuate" />
 
     <haxelib name="haxeui-core" />
+    <haxelib name="haxeui-nme" />
+
+    <haxeflag name="--macro" value="haxe.macro.Compiler.include('haxe.ui', ['haxe.ui.macros'])" />
 </project>
