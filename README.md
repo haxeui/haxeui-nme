@@ -4,7 +4,7 @@
 `haxeui-nme` is the `NME` backend for HaxeUI.
 
 <p align="center">
-	<img src="https://github.com/haxeui/haxeui-nme/raw/master/screen.png" />
+	<img src="https://github.com/haxeui/haxeui-nme/raw/master/.github/images/screen.png" />
 </p>
 
 ## Installation
