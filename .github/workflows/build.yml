@@ -10,7 +10,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         haxe-version: [3.4.7, 4.0.5, 4.1.5]
-        target: [linux, mac]
+        target: [linux, mac, windows]
         exclude:  
           - os: windows-latest
             haxe-version: 3.4.7
@@ -44,7 +44,6 @@ jobs:
         haxelib install hscript --always --quiet
         haxelib install actuate --always --quiet
         haxelib install nme --always --quiet
-        echo "y" | haxelib run nme setup
 
     - name: Build app (${{ matrix.target }}, haxe ${{ matrix.haxe-version }}, ${{ matrix.os }})
       run: |
