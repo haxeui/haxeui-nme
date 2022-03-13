@@ -10,6 +10,8 @@ import nme.display.BitmapData;
 import nme.display.Loader;
 import nme.events.Event;
 import nme.text.Font;
+import nme.text.FontStyle;
+import nme.text.FontType;
 import nme.utils.ByteArray;
 
 class AssetsImpl extends AssetsBase {
@@ -129,15 +131,14 @@ class AssetsImpl extends AssetsBase {
             return;
         }
         
-        var font = Font.loadBytes(ByteArray.fromBytes(bytes));
-        /* TODO:
-        Font.registerFont(font);
+        var font = new Font("", FontStyle.REGULAR, FontType.EMBEDDED, resourceId, resourceId);
+        var ba = ByteArray.fromBytes(bytes);
+        var fontData = Font.loadBytes(ba);
+        Font.registerFontData(font, ba);
         var fontInfo = {
             data: font.fontName
         }
         callback(resourceId, fontInfo);
-        */
-        callback(resourceId, null);
     }
     
     //***********************************************************************************************************

@@ -1,6 +1,6 @@
 .label, .textfield, .textarea {
-    __font-name: "fonts/Roboto-Regular.ttf";
-    font-name: "_sans";
+    font-name: "haxeui-nme/styles/fonts/Roboto-Regular.ttf";
+    __font-name: "_sans";
     font-size: 13px;
 }
 
