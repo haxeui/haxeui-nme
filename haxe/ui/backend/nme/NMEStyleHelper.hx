@@ -150,7 +150,7 @@ class NMEStyleHelper {
         if (borderRadius == 0) {
             graphics.drawRect(rc.left, rc.top, rc.width, rc.height);
         } else {
-            graphics.drawRoundRect(rc.left, rc.top, rc.width, rc.height, borderRadius + 1, borderRadius + 1);
+            graphics.drawRoundRect(rc.left, rc.top, rc.width, rc.height, borderRadius, borderRadius);
         }
 
         graphics.endFill();
