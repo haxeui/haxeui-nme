@@ -20,16 +20,16 @@ class ScreenImpl extends ScreenBase {
 
     private override function get_width():Float {
         if (container == Lib.current.stage) {
-            return Lib.current.stage.stageWidth;
+            return Lib.current.stage.stageWidth / Toolkit.scaleX;
         }
-        return container.width;
+        return container.width / Toolkit.scaleX;
     }
 
     private override function get_height():Float {
         if (container == Lib.current.stage) {
-            return Lib.current.stage.stageHeight;
+            return Lib.current.stage.stageHeight / Toolkit.scaleY;
         }
-        return container.height;
+        return container.height / Toolkit.scaleY;
     }
 
     private override function get_dpi():Float {
@@ -68,14 +68,29 @@ class ScreenImpl extends ScreenBase {
     }
 
     private override function handleSetComponentIndex(child:Component, index:Int) {
-        container.setChildIndex(child, index);
+        rootComponents.remove(child);
+        rootComponents.insert(index, child);
+        
+        var offset = 0;
+        for (i in 0...container.numChildren) {
+            var c = container.getChildAt(i);
+            if ((c is Component)) {
+                offset = i;
+                break;
+            }
+        }
+        
+        container.setChildIndex(child, index + offset);
     }
 
     private function onContainerResize(event:nme.events.Event) {
-        for (c in rootComponents) {
-            resizeComponent(c);
+        resizeRootComponents();
+        
+        var fn = _mapping.get(UIEvent.RESIZE);
+        if (fn != null) {
+            var uiEvent = new UIEvent(UIEvent.RESIZE);
+            fn(uiEvent);
         }
-        __onStageResize();
     }
 
     private var _containerReady:Bool = false;
@@ -92,7 +107,7 @@ class ScreenImpl extends ScreenBase {
             c.stage.quality = StageQuality.BEST;
             c.scaleMode = StageScaleMode.NO_SCALE;
             c.align = StageAlign.TOP_LEFT;
-            c.addEventListener(nme.events.Event.RESIZE, onContainerResize);
+            c.addEventListener(nme.events.Event.RESIZE, onContainerResize, false, 0, true);
             _containerReady = true;
         }
 
@@ -116,13 +131,13 @@ class ScreenImpl extends ScreenBase {
                 | MouseEvent.RIGHT_MOUSE_DOWN | MouseEvent.RIGHT_MOUSE_UP | MouseEvent.RIGHT_CLICK:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent);
+                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onMouseEvent, false, 0, true);
                 }
 
             case KeyboardEvent.KEY_DOWN | KeyboardEvent.KEY_UP:
                 if (_mapping.exists(type) == false) {
                     _mapping.set(type, listener);
-                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onKeyEvent);
+                    Lib.current.stage.addEventListener(EventMapper.HAXEUI_TO_NME.get(type), __onKeyEvent, false, 0, true);
                 }
                 
             case UIEvent.RESIZE:
@@ -177,17 +192,6 @@ class ScreenImpl extends ScreenBase {
                 keyboardEvent.ctrlKey = event.ctrlKey;
                 keyboardEvent.shiftKey = event.shiftKey;
                 fn(keyboardEvent);
-            }
-        }
-    }
-    
-    private function __onStageResize() {
-        var type:String = UIEvent.RESIZE;
-        if (type != null) {
-            var fn = _mapping.get(type);
-            if (fn != null) {
-                var uiEvent = new UIEvent(type);
-                fn(uiEvent);
             }
         }
     }

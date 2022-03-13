@@ -10,7 +10,6 @@ class EventImpl extends EventBase {
 
     public override function cancel() {
         if (_originalEvent != null) {
-            //_originalEvent.preventDefault();
             _originalEvent.stopImmediatePropagation();
             _originalEvent.stopPropagation();
         }

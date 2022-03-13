@@ -23,22 +23,23 @@ class ImageDisplayImpl extends ImageBase {
             sprite.removeChild(_bmp);
             _bmp = null;
         }
+        super.dispose();
     }
 
     private inline function containsBitmapDataInfo():Bool {
-        return _imageInfo != null && (_imageInfo.data is BitmapData);
+        return _imageInfo != null && _imageInfo.data != null && (_imageInfo.data is BitmapData);
     }
 
     #if svg
 
     private inline function containsSVGInfo():Bool {
-        return _imageInfo != null && (_imageInfo.data is format.SVG);
+        return _imageInfo != null && _imageInfo.svg != null && (_imageInfo.svg is format.SVG);
     }
 
     private function renderSVG():Void {
         sprite.graphics.clear();
         if(_imageInfo != null && _imageWidth > 0 && _imageHeight > 0) {
-            var svg:format.SVG = cast _imageInfo.data;
+            var svg:format.SVG = cast _imageInfo.svg;
             svg.render(sprite.graphics, 0, 0, Std.int(_imageWidth), Std.int(_imageHeight));
         }
     }
@@ -64,7 +65,7 @@ class ImageDisplayImpl extends ImageBase {
             }
             #if svg
             else if(containsSVGInfo()) {
-                var svg:format.SVG = cast _imageInfo.data;
+                var svg:format.SVG = cast _imageInfo.svg;
                 _imageWidth = svg.data.width;
                 _imageHeight = svg.data.height;
                 renderSVG();

@@ -11,8 +11,8 @@ class TextInputImpl extends TextDisplayImpl {
     public function new() {
         super();
 
-        textField.addEventListener(Event.CHANGE, onChange);
-        textField.addEventListener(Event.SCROLL, onScroll);
+        textField.addEventListener(Event.CHANGE, onChange, false, 0, true);
+        textField.addEventListener(Event.SCROLL, onScroll, false, 0, true);
         _inputData.vscrollPageStep = 1;
         _inputData.vscrollNativeWheel = true;
     }
@@ -39,6 +39,18 @@ class TextInputImpl extends TextDisplayImpl {
         if (textField.stage != null) {
 			textField.stage.focus = null;
 		}
+    }
+    
+    public override function dispose() {
+        if (textField != null) {
+            if (parentComponent != null) {
+                parentComponent.removeChild(textField);
+            }
+            textField.removeEventListener(Event.CHANGE, onChange);
+            textField.removeEventListener(Event.SCROLL, onScroll);
+            textField = null;
+        }    
+        super.dispose();
     }
     
     private override function set_dataSource(value:DataSource<String>):DataSource<String> {
@@ -77,19 +89,19 @@ class TextInputImpl extends TextDisplayImpl {
         super.validateData();
         
         var changed = false;
-        var hscrollValue:Int = Std.int(_inputData.hscrollPos);
+        var hscrollValue:Int = Math.round(_inputData.hscrollPos);
         if (textField.scrollH != hscrollValue) {
             textField.scrollH = hscrollValue;
             changed = true;
         }
 
-        var vscrollValue:Int = Std.int(_inputData.vscrollPos);
+        var vscrollValue:Int = Math.round(_inputData.vscrollPos);
         if (textField.scrollV != vscrollValue) {
             textField.scrollV = vscrollValue;
             changed = true;
         }
         
-        textField.addEventListener(Event.SCROLL, onScroll);
+        textField.addEventListener(Event.SCROLL, onScroll, false, 0, true);
         
         if (changed == true) {
             onScroll(null);

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <module id="haxeui-nme">
     <resources>
-        <resource path="/haxe/ui/backend/nme/_module/styles" prefix="styles" />
+        <resource path="/haxe/ui/backend/nme/_module/styles" prefix="haxeui-nme/styles" />
     </resources>
     <themes>
         <global>
-            <style resource="styles/main.css" />
+            <style resource="haxeui-nme/styles/main.css" />
         </global>
         <default>
-            <style resource="styles/default/main.css" />
+            <style resource="haxeui-nme/styles/default/main.css" />
         </default>
+        <dark parent="default">
+            <style resource="haxeui-nme/styles/dark/main.css" />
+        </dark>
     </themes>
 </module>
