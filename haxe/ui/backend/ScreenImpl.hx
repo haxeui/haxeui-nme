@@ -36,19 +36,6 @@ class ScreenImpl extends ScreenBase {
         return 72;// System.getDisplay(0).dpi;
     }
 
-    private override function get_focus():Component {
-        return cast Lib.current.stage.focus;
-    }
-    
-    private override function set_focus(value:Component):Component {
-        if (value != null && value.hasTextInput()) {
-            Lib.current.stage.focus = value.getTextInput().textField;
-        } else {
-            Lib.current.stage.focus = value;
-        }
-        return value;
-    }
-
     private override function set_title(s:String):String {
         #if (flash || android || ios )
         trace("WARNING: this platform doesnt support dynamic titles");
